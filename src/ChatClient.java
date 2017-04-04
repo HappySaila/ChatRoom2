@@ -18,7 +18,15 @@ public class ChatClient implements Runnable{
 		ChatClient chatClient = new ChatClient();
 		
 		//Open client streams and socket
+		//Attept to connect to the host
 		try{
+			//clear the terminal
+			Utils.ClearTerminal();
+			//print heading
+			Utils.PrintUILine();
+			System.out.println("Connection...");
+
+
 			//create socket
 			clientSocket = new Socket(chatClient.host, chatClient.portNumber);
 			//create streams
