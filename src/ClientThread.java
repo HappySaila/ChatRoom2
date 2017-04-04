@@ -33,6 +33,19 @@ public class ClientThread extends Thread{
 			}
 		}
 	}
+
+	synchronized void CloseThread() throws IOException{
+		//terminates thread and removes it from the server so that its space can be reused
+		for (int i = 0; i < ChatServer.chatroomCapacity; i++) {
+			if (clients[i] == this) {
+				clients[i] = null;
+			}
+		}
+
+		input.close();
+		output.close();
+		clientSocket.close();
+	}
 	
 	public void run(){
 		try {
@@ -79,6 +92,8 @@ public class ClientThread extends Thread{
 			//close all I/O components
 			Utils.PrintUILine(output);
 			output.println("Goodbye "+clientName);
+
+			CloseThread();
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
