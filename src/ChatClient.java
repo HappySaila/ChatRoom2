@@ -59,6 +59,7 @@ public class ChatClient implements Runnable{
 		
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void run() {
 		//keep on reading from the socket until the server tells the client to "terminate"
@@ -67,7 +68,7 @@ public class ChatClient implements Runnable{
 		try {
 			while((reply = input.readLine()) != null){//user has entered a valid reply
 				System.out.println(reply);
-				if (reply.indexOf("*** terminated")){
+				if (reply.indexOf("*** terminated") != -1){
 					break;
 				}
 				isClosed = true;
