@@ -35,10 +35,10 @@ public class ChatClient implements Runnable{
 			message = new BufferedReader(new InputStreamReader(System.in));
 		} catch (UnknownHostException e){
 			//unknown host cannot create socket
-			Utils.UnableToConnect();
+			Utils.UnableToConnect(e);
 		} catch (IOException e){
 			//input/output error
-			Utils.UnableToConnect();
+			Utils.UnableToConnect(e);
 		}
 		
 		//if the client was instantiated correctly then begin communicating

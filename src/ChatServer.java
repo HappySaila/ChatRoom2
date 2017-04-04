@@ -18,11 +18,12 @@ public class ChatServer {
 	
 	
 	public static void main(String[] args) {
+		Utils.ClearTerminal();
 		Utils.PrintUILine();
 		System.out.println("Server "+localHost+" on port "+portNumber +" opened.");
 		System.out.println("Server is open for clients to join!");
 		Utils.PrintUILine();
-		//open server socket
+		//open server socket so that clients can connect to it
 		try {
 			serverSocket = new ServerSocket(portNumber);
 		} catch (IOException e) {

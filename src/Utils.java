@@ -14,4 +14,8 @@ public class Utils{
         System.out.println(e.getMessage());
         PrintUILine();
     }
+
+    public static boolean nameIsValid(String s){
+        return s.matches("[a-zA-Z]+");
+    }
 }
