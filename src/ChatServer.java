@@ -6,37 +6,42 @@ import java.util.ArrayList;
 public class ChatServer {
 	private static final int portNumber = 1234;
 	private static final String localHost = "localhost";
-	//sockets
+
+	//socket to recieve connection request
 	private static ServerSocket serverSocket = null;
+	//socket to communicate with client
 	private static Socket clientSocket = null;
 	
 	//chat server can dynamically accept new users
-	private static final ClientThread[] clients = new ClientThread[10];
+	public static int chatroomCapacity = 10;
+	private static final ClientThread[] clients = new ClientThread[chatroomCapacity];
 	
 	
 	public static void main(String[] args) {
+		Utils.PrintUILine();
 		System.out.println("Server "+localHost+" on port "+portNumber +" opened.");
+		System.out.println("Server is open for clients to join!");
+		Utils.PrintUILine();
 		//open server socket
 		try {
 			serverSocket = new ServerSocket(portNumber);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		while(true){
 			try {
+				//keep listening for new clients to join the server
 				clientSocket = serverSocket.accept();
-				System.out.println(clientSocket);
-				for (int i = 0; i < 10 + 1; i++) {
+				for (int i = 0; i < chatroomCapacity + 1; i++) {
 					if (clients[i] == null){
 						clients[i] = new ClientThread(clientSocket, clients);
 						clients[i].start();
+						System.out.println("> User "+i+" has joined the server.");
 						break;
 					}
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
