@@ -29,33 +29,39 @@ public class ChatClient implements Runnable{
 
 			//create socket
 			clientSocket = new Socket(chatClient.host, chatClient.portNumber);
-			//create streams
+			//create streams to write and read from the client socket
 			input = new DataInputStream(clientSocket.getInputStream());
 			output = new PrintStream(clientSocket.getOutputStream());
-			//create message reader
 			message = new BufferedReader(new InputStreamReader(System.in));
 		} catch (UnknownHostException e){
 			//unknown host cannot create socket
-			System.out.println("Error:"+e.getMessage());
-			System.exit(0);
+			Utils.UnableToConnect();
 		} catch (IOException e){
 			//input/output error
-			System.out.println("Error:"+e.getMessage());
-			System.exit(0);
+			Utils.UnableToConnect();
 		}
 		
-		//if all streams and the socket has been created successfully, write data to the open connection and port
+		//if the client was instantiated correctly then begin communicating
+		//data is read and written using different threads
+		//data is written to the socket on a new thread
+		//data is read from the socket using the current main thread
+		//data is read from client socket using Print stream and a buffered reader
+		//data is written to the client socket using dataInputStream
 		if (clientSocket!=null && input!=null && output!=null){
-			System.out.println("Connecting...");
+			//client is connected
+			System.out.println("Connected");
+			Utils.PrintUILine();
+			//create a new thread to write data to the client socket
 			new Thread(new ChatClient()).start();
 			
 			try {
-				//for an open port
+				//port has been opened
 				while(!isClosed){
 					output.println(message.readLine().trim());
 				}
 				
-				//close streams and socket
+				//the server has terminated the connection
+				//close all ports
 				output.close();
 				input.close();
 				clientSocket.close();
@@ -77,7 +83,7 @@ public class ChatClient implements Runnable{
 		String reply;
 		
 		try {
-			while((reply = input.readLine()) != null){//user has entered a valid reply
+			while((reply = input.readLine()) != null){
 				System.out.println(reply);
 				if (reply.indexOf("*** terminated") != -1){
 					break;
