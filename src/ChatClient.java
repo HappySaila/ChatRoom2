@@ -24,7 +24,7 @@ public class ChatClient implements Runnable{
 			Utils.ClearTerminal();
 			//print heading
 			Utils.PrintUILine();
-			System.out.println("Connection...");
+			System.out.println("Connecting...");
 
 
 			//create socket
@@ -49,7 +49,10 @@ public class ChatClient implements Runnable{
 		//data is written to the client socket using dataInputStream
 		if (clientSocket!=null && input!=null && output!=null){
 			//client is connected
-			System.out.println("Connected");
+			System.out.println("Connected!");
+			System.out.println("Use \"/quit\" to leave the chatroom.");
+			System.out.println("Use \"/m Recipient\" to send a private message.");
+			System.out.println("Eg. /m Greg Hello greg! -> will send \"Hello greg\" to Greg.");
 			Utils.PrintUILine();
 			//create a new thread to write data to the client socket
 			new Thread(new ChatClient()).start();

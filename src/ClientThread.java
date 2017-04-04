@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.net.Socket;
 
 public class ClientThread extends Thread{
-	private String clientName;
+	public String clientName;
 	
 	private ClientThread[] clients;
 	private Socket clientSocket = null;
@@ -30,6 +30,17 @@ public class ClientThread extends Thread{
 					clients[i].output.println(clientName + ": "+message);
 				}
 
+			}
+		}
+	}
+
+	synchronized  void messagePrivate(String message, String recipient){
+		//will send a private message only to the recipient
+
+		for (int i = 0; i < ChatServer.chatroomCapacity; i++) {
+			if (clients[i] != null && clients[i] != this && clients[i].clientName.equals(recipient)){
+				clients[i].output.println("<<<Private message from "+clientName+">>>");
+				clients[i].output.println("--" + clientName + ": "+message);
 			}
 		}
 	}
@@ -84,9 +95,20 @@ public class ClientThread extends Thread{
 					messageAll(clientName + " has left the chat.", true);
 					break;
 				}
-				
-				//send the message to all of the users
-				messageAll(inLine, false);
+
+				if (inLine.startsWith("/m")){
+					//send the message to a single user as private
+					String recipient = inLine.split(" ")[1];
+
+					//edit message, current message = /m name message. we want current message = message
+					inLine = inLine.split(" ", 3)[2];
+					messagePrivate(inLine, recipient);
+				} else {
+					//send the message to all of the users as a public message
+					messageAll(inLine, false);
+				}
+
+
 			}
 			
 			//close all I/O components
