@@ -79,16 +79,17 @@ public class ChatClient implements Runnable{
 	@SuppressWarnings("deprecation")
 	@Override
 	public void run() {
-		//keep on reading from the socket until the server tells the client to "terminate"
+		//keep on reading from the socket until the server tells the server closes the connection
 		String reply;
 		
 		try {
 			while((reply = input.readLine()) != null){
 				System.out.println(reply);
-				if (reply.indexOf("*** terminated") != -1){
+				if (reply.indexOf("Goodbye") != -1){
 					break;
 				}
 			}
+			Utils.PrintUILine();
 			isClosed = true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

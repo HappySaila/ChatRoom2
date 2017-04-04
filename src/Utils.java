@@ -1,7 +1,13 @@
+import java.io.PrintStream;
+
 public class Utils{
 
     public static void PrintUILine(){
         System.out.println("--------------------------------------------");
+    }
+
+    public static void PrintUILine(PrintStream output){
+        output.println("--------------------------------------------");
     }
 
     public static void ClearTerminal(){
