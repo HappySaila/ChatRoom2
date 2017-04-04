@@ -9,6 +9,6 @@ client:
 clean:
 	cd bin && rm *
 
-openui:
+ui:
 	cd UI && cd src && javac *.java
 	cd UI && cd src && java ChatRoomApp
