@@ -2,18 +2,17 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class ClientThread extends Thread{
 	private String clientName;
 	
-	private ArrayList<ClientThread> clients;
+	private ClientThread[] clients;
 	private Socket clientSocket = null;
 	private PrintStream output = null;
 	private DataInputStream input = null;
 	
 
-	public ClientThread(Socket clientSocket, ArrayList<ClientThread> clients) {
+	public ClientThread(Socket clientSocket, ClientThread[] clients) {
 		this.clientSocket = clientSocket;
 		this.clients = clients;
 	}
@@ -36,9 +35,9 @@ public class ClientThread extends Thread{
 			output.println("Welcome "+name+" to the chat.\nBe nice!");
 			
 			//inform the chat room that this client has joined
-			for (int i = 0; i < clients.size(); i++) {
-				if (clients.get(i) != null && clients.get(i) != this){
-					clients.get(i).output.println(clientName + " has joined the chatroom."); 
+			for (int i = 0; i < 10; i++) {
+				if (clients[i] != null && clients[i] != this){
+					clients[i].output.println(clientName + " has joined the chatroom."); 
 				}
 			}
 			
@@ -49,9 +48,9 @@ public class ClientThread extends Thread{
 				
 				//sending public message
 				synchronized(this){
-					for (int i = 0; i < clients.size(); i++) {
-						if (clients.get(i) != null && clients.get(i) != this){
-							clients.get(i).output.println(clientName + ": "+inLine);
+					for (int i = 0; i < 10; i++) {
+						if (clients[i] != null && clients[i] != this){
+							clients[i].output.println(clientName + ": "+inLine);
 						}
 					}
 				}

@@ -11,10 +11,11 @@ public class ChatServer {
 	private static Socket clientSocket = null;
 	
 	//chat server can dynamically accept new users
-	private static final ArrayList<ClientThread> clients = new ArrayList<ClientThread>();
+	private static final ClientThread[] clients = new ClientThread[10];
 	
 	
 	public static void main(String[] args) {
+		System.out.println("Server "+localHost+" on port "+portNumber +" opened.");
 		//open server socket
 		try {
 			serverSocket = new ServerSocket(portNumber);
@@ -26,11 +27,11 @@ public class ChatServer {
 		while(true){
 			try {
 				clientSocket = serverSocket.accept();
-				
-				for (int i = 0; i < clients.size(); i++) {
-					if (clients.get(i) == null){
-						clients.set(i, new ClientThread(clientSocket, clients));
-						clients.get(i).start();
+				System.out.println(clientSocket);
+				for (int i = 0; i < 10 + 1; i++) {
+					if (clients[i] == null){
+						clients[i] = new ClientThread(clientSocket, clients);
+						clients[i].start();
 						break;
 					}
 				}

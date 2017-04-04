@@ -28,29 +28,32 @@ public class ChatClient implements Runnable{
 			message = new BufferedReader(new InputStreamReader(System.in));
 		} catch (UnknownHostException e){
 			//unknown host cannot create socket
-			System.out.println("Error:"+e);
+			System.out.println("Error:"+e.getMessage());
 			System.exit(0);
 		} catch (IOException e){
 			//input/output error
-			System.out.println("Error:"+e);
+			System.out.println("Error:"+e.getMessage());
 			System.exit(0);
 		}
 		
 		//if all streams and the socket has been created successfully, write data to the open connection and port
 		if (clientSocket!=null && input!=null && output!=null){
+			System.out.println("Connecting...");
 			new Thread(new ChatClient()).start();
 			
 			try {
 				//for an open port
 				while(!isClosed){
 					output.println(message.readLine().trim());
-					//close streams and socket
-					output.close();
-					input.close();
-					clientSocket.close();
 				}
+				
+				//close streams and socket
+				output.close();
+				input.close();
+				clientSocket.close();
+				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				System.out.println("IO Exception!");
 				e.printStackTrace();
 			}
 			
@@ -71,8 +74,8 @@ public class ChatClient implements Runnable{
 				if (reply.indexOf("*** terminated") != -1){
 					break;
 				}
-				isClosed = true;
 			}
+			isClosed = true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
