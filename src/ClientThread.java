@@ -73,6 +73,7 @@ public class ClientThread extends Thread{
             File srcFile = new File(location);
             FileUtils.copyFileToDirectory(srcFile, destDir);
         } catch(Exception e) {
+
         }
     }
 	
@@ -83,17 +84,36 @@ public class ClientThread extends Thread{
 			//the socket has aceess to all other client sockets on the server side
 			input = new DataInputStream(clientSocket.getInputStream());
 			output = new PrintStream(clientSocket.getOutputStream());
-			while(true){
+			boolean nameIsValid = false;
+			boolean nameIsUnique = true;
+			while(!nameIsValid || !nameIsUnique){
 				output.println("Enter your username: ");
 				clientName = input.readLine().trim();
 
 				//check if the clients name is valid
 				//eg. (John3 = not valid)
 				//(John = valid)
-				if (Utils.nameIsValid(clientName)){
-					break;
+				//will also check for name duplicates
+				nameIsValid = Utils.nameIsValid(clientName);
+		
+				for (int i = 0; i < ChatServer.chatroomCapacity; i++) {
+					if (clients[i] != null && clients[i] != this){
+						if (clientName.equals(clients[i].clientName)){
+							nameIsUnique = false;
+							break;
+						} else {
+							nameIsUnique = true;
+						}
+					}
 				}
-				output.println("Your name is invalid. Please try again.");
+				
+				if (!nameIsValid){
+					output.println("Your name is invalid. Please try again.");	
+				}
+
+				if (!nameIsUnique){
+					output.println("The name you entered is not unique. Please try again.");
+				}
 			}
 			
 			//new client has entered the room
@@ -146,10 +166,16 @@ public class ClientThread extends Thread{
 								e.printStackTrace();  
 							 }
 							 
-							 //File is open using default application
+
+							 try{
+							 	//File is open using default application
 							 File f = new File("Uploads/"+fileToOpen);
 							 Desktop dt = Desktop.getDesktop();
 							 dt.open(f);
+							} catch (Exception e){
+								output.println("No such file \""+ fileToOpen +"\". Please try again.");
+							}
+							 
 						}
 						 catch (Exception ex)
 						 {
@@ -162,6 +188,25 @@ public class ClientThread extends Thread{
 					//edit message, current message = /m name message. we want current message = message
 					inLine = inLine.split(" ", 3)[2];
 					messagePrivate(inLine, recipient);
+				} 
+				else if (inLine.startsWith("/v")){
+					//Create new File Chooser and initiate its pop up
+					final JFileChooser fc = new JFileChooser();
+					int option = fc.showDialog(null, "Attach");
+          
+					if (option == JFileChooser.APPROVE_OPTION) {
+						String recipient = inLine.split(" ")[1];
+						//instantiate file
+						File selectedFile = fc.getSelectedFile();
+						//Get size of file
+						double kilobytes = (selectedFile.length())/(1024);
+						//Inform Users file has been uploaded
+						messagePrivate(" Uploaded file: "+selectedFile.getName()+" ("+kilobytes+" KB) .", recipient);            
+						//Copy File to Server ("Uploads Folder")
+						String path = selectedFile.getAbsolutePath();
+						moveTheFile(path);
+
+					}
 				} else{//send the message to all of the users as a public message
 					 messageAll(inLine, false);
 				}
