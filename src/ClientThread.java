@@ -1,7 +1,16 @@
+import org.apache.commons.io.FileUtils;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JFileChooser;
 import java.io.DataInputStream;
+import javax.swing.JDialog;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.awt.Desktop;
 import java.net.Socket;
+import java.io.File;
+import java.util.*;
+
 
 public class ClientThread extends Thread{
 	public String clientName;
@@ -58,6 +67,15 @@ public class ClientThread extends Thread{
 		clientSocket.close();
 	}
 	
+	public void moveTheFile (String location) {
+        try {
+            File destDir = new File("Uploads/");
+            File srcFile = new File(location);
+            FileUtils.copyFileToDirectory(srcFile, destDir);
+        } catch(Exception e) {
+        }
+    }
+	
 	public void run(){
 		try {
 			//create output and input streams
@@ -89,23 +107,63 @@ public class ClientThread extends Thread{
 			while(true){
 				//reads the clients input from the socket
 				String inLine = input.readLine();
-
+				//check if the user has quit the program
 				if (inLine.equals("/quit")){
 					//tell all the other users that the client has left the chat
 					messageAll(clientName + " has left the chat.", true);
 					break;
 				}
 
-				if (inLine.startsWith("/m")){
+
+				//checks if user has invoked special functionality eg. /f /m /i
+				//else it will forward all text typed to all other clients
+				if (inLine.startsWith("/f")){
+					//Create new File Chooser and initiate its pop up
+					final JFileChooser fc = new JFileChooser();
+					int option = fc.showDialog(null, "Attach");
+          
+					if (option == JFileChooser.APPROVE_OPTION) {
+						
+						//instantiate file
+						File selectedFile = fc.getSelectedFile();
+						//Get size of file
+						double kilobytes = (selectedFile.length())/(1024);
+						//Inform Users file has been uploaded
+						messageAll(" Uploaded file: "+selectedFile.getName()+" ("+kilobytes+" KB) .", false);            
+						//Copy File to Server ("Uploads Folder")
+						String path = selectedFile.getAbsolutePath();
+						moveTheFile(path);
+					}
+				} else if(inLine.startsWith("/i")){
+					try{  //Gets the file that user wants to open
+						  String fileToOpen = inLine;
+						  try{
+							 fileToOpen = inLine.substring(3);
+							 }
+							 catch (Exception e)
+							 {
+								messageAll("Enter valid file!", false);
+								e.printStackTrace();  
+							 }
+							 
+							 //File is open using default application
+							 File f = new File("Uploads/"+fileToOpen);
+							 Desktop dt = Desktop.getDesktop();
+							 dt.open(f);
+						}
+						 catch (Exception ex)
+						 {
+							 messageAll("Enter valid file!", false);
+							 ex.printStackTrace();
+						 }   
+				} else if (inLine.startsWith("/m")){
 					//send the message to a single user as private
 					String recipient = inLine.split(" ")[1];
-
 					//edit message, current message = /m name message. we want current message = message
 					inLine = inLine.split(" ", 3)[2];
 					messagePrivate(inLine, recipient);
-				} else {
-					//send the message to all of the users as a public message
-					messageAll(inLine, false);
+				} else{//send the message to all of the users as a public message
+					 messageAll(inLine, false);
 				}
 
 

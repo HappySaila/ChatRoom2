@@ -53,6 +53,9 @@ public class ChatClient implements Runnable{
 			System.out.println("Use \"/quit\" to leave the chatroom.");
 			System.out.println("Use \"/m Recipient\" to send a private message.");
 			System.out.println("Eg. /m Greg Hello greg! -> will send \"Hello greg\" to Greg.");
+			System.out.println("Use \"/f \" to upload file to chat server.");
+			System.out.println("Use \"/i filename.ext\" to view specific uploaded file.");
+			System.out.println("Eg. /i puppy.jpeg! -> will open the image puppy.jpeg.");
 			Utils.PrintUILine();
 			//create a new thread to write data to the client socket
 			new Thread(new ChatClient()).start();
